@@ -1,0 +1,87 @@
+<div class="prescriptions-page">
+
+  <!-- ── Toolbar ──────────────────────────────────────────── -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Buscar por paciente, médico, clínica..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="sex-filters">
+      @for (opt of [['all','Todos'],['F','Femenino'],['M','Masculino']]; track opt[0]) {
+        <button
+          class="filter-btn"
+          [class.active]="sexFilter === opt[0]"
+          (click)="sexFilter = opt[0]"
+          type="button"
+        >{{ opt[1] }}</button>
+      }
+    </div>
+
+    <span class="result-count">{{ filtered.length }} resultado{{ filtered.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────── -->
+  <div class="card">
+    @if (loading()) {
+      <div class="empty-state">Cargando recetas...</div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>N° Receta</th>
+            <th>Fecha</th>
+            <th>Paciente</th>
+            <th>Sexo</th>
+            <th>Clínica</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Medicamentos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (rx of filtered; track rx.id) {
+            <tr class="table-row" [routerLink]="['/prescriptions', rx.id]">
+              <td><span class="rx-number">{{ rx.prescription_number }}</span></td>
+              <td class="td-date">{{ rx.prescription_date | date:'dd MMM yyyy':'':'es' }}</td>
+              <td>
+                <div class="td-primary">{{ rx.patient_name }}</div>
+                <div class="td-secondary">{{ rx.patient_age }} años</div>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="'badge-' + sexVariant(rx.patient_sex)">
+                  {{ sexLabel(rx.patient_sex) }}
+                </span>
+              </td>
+              <td class="td-truncate">{{ rx.clinic_name }}</td>
+              <td class="td-truncate">{{ rx.prescriber_name }}</td>
+              <td class="td-light">{{ rx.prescriber_specialty }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="rx.medications_count < 4" [class.badge-warning]="rx.medications_count >= 4">
+                  {{ rx.medications_count }} med{{ rx.medications_count !== 1 ? 's' : '' }}
+                </span>
+              </td>
+              <td>
+                <svg viewBox="0 0 24 24" fill="currentColor" class="chevron-icon">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                </svg>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="9"><div class="empty-state">No se encontraron recetas</div></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+</div>

@@ -1,0 +1,61 @@
+<div class="doctors-page">
+
+  <!-- ── Toolbar ───────────────────────────────────────────── -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" [(ngModel)]="search" placeholder="Buscar por nombre, especialidad o clínica..." class="search-input" />
+    </div>
+    <span class="result-count">{{ filtered.length }} médico{{ filtered.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────── -->
+  <div class="card">
+    @if (loading()) {
+      <div class="loading-state">Cargando médicos...</div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Clínica</th>
+            <th>Matrícula</th>
+            <th>Teléfono</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of filtered; track d.id) {
+            <tr class="table-row">
+              <td>
+                <div class="doctor-cell">
+                  <div class="doctor-avatar">{{ initials(d.name) }}</div>
+                  <div>
+                    <div class="td-primary">{{ d.name }}</div>
+                    @if (d.email) {
+                      <div class="td-secondary">{{ d.email }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="'badge-' + specVariant(d.specialty)">
+                  {{ d.specialty }}
+                </span>
+              </td>
+              <td class="td-truncate">{{ d.clinic_name || '—' }}</td>
+              <td class="td-mono">{{ d.license_number || '—' }}</td>
+              <td class="td-mid">{{ d.phone || '—' }}</td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="5"><div class="empty-state">No se encontraron médicos</div></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+</div>

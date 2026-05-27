@@ -1,0 +1,77 @@
+<div class="clinics-page">
+
+  <!-- ── Toolbar ───────────────────────────────────────────── -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" [(ngModel)]="search" placeholder="Buscar por nombre o ciudad..." class="search-input" />
+    </div>
+    <span class="result-count">{{ filtered.length }} clínica{{ filtered.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- ── Cards grid ────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-state">Cargando clínicas...</div>
+  } @else if (filtered.length === 0) {
+    <div class="empty-card"><div class="empty-state">No se encontraron clínicas</div></div>
+  } @else {
+    <div class="cards-grid">
+      @for (c of filtered; track c.id) {
+        <div class="clinic-card">
+
+          <!-- Card header -->
+          <div class="clinic-card-header">
+            <div class="clinic-card-header-info">
+              <h3 class="clinic-name">{{ c.name }}</h3>
+              <div class="clinic-city">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                {{ c.city || 'Sin ciudad' }}
+              </div>
+            </div>
+            <div class="clinic-icon">
+              <svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </div>
+          </div>
+
+          <!-- Card body -->
+          <div class="clinic-card-body">
+            @if (c.address) {
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span>{{ c.address }}</span>
+              </div>
+            }
+            @if (c.phone) {
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                <span>{{ c.phone }}</span>
+              </div>
+            }
+            @if (c.email) {
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <span>{{ c.email }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Card footer -->
+          <div class="clinic-card-footer">
+            <div class="stat-pill">
+              <span class="stat-num">—</span>
+              <span class="stat-lbl">Médicos</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-num">—</span>
+              <span class="stat-lbl">Recetas</span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

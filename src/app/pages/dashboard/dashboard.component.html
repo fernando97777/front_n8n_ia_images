@@ -1,1 +1,139 @@
-<p>dashboard works!</p>
+<div class="dashboard" [class.hidden]="loading()">
+
+  <!-- ── Stats row ──────────────────────────────────────── -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+      </div>
+      <div class="stat-value">{{ prescriptions().length }}</div>
+      <div class="stat-label">Recetas analizadas</div>
+      <div class="stat-sub">Total en el sistema</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </div>
+      <div class="stat-value">{{ clinics().length }}</div>
+      <div class="stat-label">Clínicas</div>
+      <div class="stat-sub">Instituciones activas</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      </div>
+      <div class="stat-value">{{ doctors().length }}</div>
+      <div class="stat-label">Médicos</div>
+      <div class="stat-sub">Prescriptores registrados</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <div class="stat-value">{{ formatTokens(totalTokens) }}</div>
+      <div class="stat-label">Tokens IA usados</div>
+      <div class="stat-sub">Procesamiento Claude</div>
+    </div>
+  </div>
+
+  <!-- ── Bottom row ─────────────────────────────────────── -->
+  <div class="bottom-row">
+
+    <!-- Recent prescriptions -->
+    <div class="card recent-table-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Últimas recetas</h3>
+          <p class="card-sub">Recetas procesadas recientemente</p>
+        </div>
+        <a routerLink="/prescriptions" class="link-ver-todas">
+          Ver todas
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </a>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Paciente</th>
+            <th>Clínica</th>
+            <th>Médico</th>
+            <th>Meds</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (rx of recent; track rx.id) {
+            <tr class="table-row" [routerLink]="['/prescriptions', rx.id]">
+              <td class="td-date">{{ rx.prescription_date | date:'dd MMM yyyy':'':'es' }}</td>
+              <td>
+                <div class="td-primary">{{ rx.patient_name }}</div>
+                <div class="td-secondary">{{ rx.patient_age }} años · {{ rx.patient_sex }}</div>
+              </td>
+              <td class="td-truncate">{{ rx.clinic_name }}</td>
+              <td class="td-truncate">{{ rx.prescriber_name }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="rx.medications_count < 4" [class.badge-warning]="rx.medications_count >= 4">
+                  {{ rx.medications_count }} med{{ rx.medications_count !== 1 ? 's' : '' }}
+                </span>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="5" class="empty-row">Sin recetas recientes</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Side column -->
+    <div class="side-col">
+
+      <!-- Top doctors -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Top médicos</h3>
+          <a routerLink="/doctors" class="link-ver">Ver <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></a>
+        </div>
+        <div class="mini-list">
+          @for (d of topDoctors; track d.id) {
+            <div class="mini-row">
+              <div class="mini-avatar">{{ d.name | slice:0:1 }}</div>
+              <div class="mini-info">
+                <div class="mini-name">{{ d.name }}</div>
+                <div class="mini-sub">{{ d.specialty }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Top clinics -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Top clínicas</h3>
+          <a routerLink="/clinics" class="link-ver">Ver <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></a>
+        </div>
+        <div class="clinic-bars">
+          @for (c of topClinics; track c.id) {
+            <div class="clinic-bar-row">
+              <div class="clinic-bar-name">{{ c.name }}</div>
+              <div class="bar-track">
+                <div class="bar-fill"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+@if (loading()) {
+  <div class="loading-state">Cargando datos...</div>
+}

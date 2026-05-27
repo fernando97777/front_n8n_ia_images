@@ -1,0 +1,126 @@
+<div class="detail-page">
+  @if (loading()) {
+    <div class="loading-state">Cargando receta...</div>
+  }
+
+  @if (rx(); as r) {
+    <!-- ── Back + heading ──────────────────────────────────── -->
+    <div class="page-head">
+      <a routerLink="/prescriptions" class="btn-back">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+        Volver
+      </a>
+      <div>
+        <div class="rx-title-row">
+          <h2 class="rx-number">{{ r.prescription_number }}</h2>
+          <span class="badge badge-success">{{ r.prescription_date | date:'dd MMM yyyy':'':'es' }}</span>
+        </div>
+        <p class="rx-meta">
+          Procesado con {{ r.claude_model }} · {{ totalTokens | number }} tokens totales
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Info cards ──────────────────────────────────────── -->
+    <div class="info-cards">
+
+      <div class="info-card">
+        <div class="info-card-header">Paciente</div>
+        <div class="info-rows">
+          <div class="info-row"><span class="info-lbl">Nombre</span><span class="info-val">{{ r.patient_name }}</span></div>
+          @if (r.patient_age) {
+            <div class="info-row"><span class="info-lbl">Edad</span><span class="info-val">{{ r.patient_age }} años</span></div>
+          }
+          <div class="info-row"><span class="info-lbl">Sexo</span><span class="info-val">{{ sexLabel(r.patient_sex) }}</span></div>
+          <div class="info-row"><span class="info-lbl">Alergias</span><span class="info-val">{{ r.patient_allergies || 'Sin alergias registradas' }}</span></div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-header">Médico prescriptor</div>
+        <div class="info-rows">
+          <div class="info-row"><span class="info-lbl">Nombre</span><span class="info-val">{{ r.prescriber_name }}</span></div>
+          @if (r.prescriber_specialty) {
+            <div class="info-row"><span class="info-lbl">Especialidad</span><span class="info-val">{{ r.prescriber_specialty }}</span></div>
+          }
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-header">Institución</div>
+        <div class="info-rows">
+          <div class="info-row"><span class="info-lbl">Clínica</span><span class="info-val">{{ r.clinic_name || '—' }}</span></div>
+          @if (r.clinic_address) {
+            <div class="info-row"><span class="info-lbl">Dirección</span><span class="info-val">{{ r.clinic_address }}</span></div>
+          }
+          @if (r.clinic_phone) {
+            <div class="info-row"><span class="info-lbl">Teléfono</span><span class="info-val">{{ r.clinic_phone }}</span></div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Medications table ───────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Medicamentos prescritos</h3>
+        <span class="badge badge-warning">
+          {{ r.medications.length }} medicamento{{ r.medications.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Medicamento</th>
+            <th>Nombre comercial</th>
+            <th>Cantidad</th>
+            <th>Vía</th>
+            <th>Indicaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of r.medications; track m.id) {
+            <tr class="med-row">
+              <td><span class="med-name">{{ m.name }}</span></td>
+              <td class="td-mid">{{ m.commercial_name || '—' }}</td>
+              <td><span class="badge badge-info">{{ m.quantity }} uds.</span></td>
+              <td><span class="pill">{{ routeLabel(m.route) }}</span></td>
+              <td class="td-notes">{{ m.notes || '—' }}</td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="5"><div class="empty-state">Sin medicamentos registrados</div></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── IA Metadata ─────────────────────────────────────── -->
+    <div class="meta-footer">
+      <div class="meta-item">
+        <div class="meta-lbl">Modelo IA</div>
+        <div class="meta-val">{{ r.claude_model }}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-lbl">Tokens entrada</div>
+        <div class="meta-val">{{ r.input_tokens | number }}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-lbl">Tokens salida</div>
+        <div class="meta-val">{{ r.output_tokens | number }}</div>
+      </div>
+      @if (r.google_drive_file_id) {
+        <div class="meta-item">
+          <div class="meta-lbl">Google Drive ID</div>
+          <div class="meta-val meta-mono">{{ r.google_drive_file_id }}</div>
+        </div>
+      }
+      <div class="meta-item">
+        <div class="meta-lbl">Creado</div>
+        <div class="meta-val">{{ r.created_at | date:'dd/MM/yyyy HH:mm':'':'es' }}</div>
+      </div>
+    </div>
+  }
+</div>

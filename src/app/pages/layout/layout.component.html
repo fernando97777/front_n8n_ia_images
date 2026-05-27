@@ -1,0 +1,94 @@
+<div class="app-shell">
+
+  <!-- ── Sidebar ──────────────────────────────────────────── -->
+  <aside class="sidebar" [class.collapsed]="collapsed()">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-mark">℞</div>
+      @if (!collapsed()) {
+        <span class="logo-text">RecetIQ</span>
+      }
+    </div>
+
+    <!-- Nav -->
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
+          <!-- Dashboard -->
+          @if (item.icon === 'dashboard') {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+          }
+          <!-- Prescriptions -->
+          @if (item.icon === 'prescriptions') {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          }
+          <!-- Clinics -->
+          @if (item.icon === 'clinics') {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          }
+          <!-- Doctors -->
+          @if (item.icon === 'doctors') {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          }
+          @if (!collapsed()) {
+            <span>{{ item.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <!-- Footer: collapse toggle + user -->
+    <div class="sidebar-footer">
+      <button class="nav-item collapse-btn" (click)="toggleSidebar()" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" [class.rotated]="collapsed()">
+          <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/>
+        </svg>
+        @if (!collapsed()) { <span>Colapsar</span> }
+      </button>
+
+      <div class="user-row">
+        <div class="user-avatar">A</div>
+        @if (!collapsed()) {
+          <div class="user-info">
+            <div class="user-name">Admin</div>
+            <div class="user-role">Administrador</div>
+          </div>
+        }
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main area ─────────────────────────────────────────── -->
+  <div class="main-area">
+
+    <!-- Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <!-- Page title is set by each child page via a service or title strategy -->
+        <h1 class="page-title">RecetIQ</h1>
+      </div>
+      <div class="header-right">
+        <div class="notif-wrap">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+          </svg>
+          <span class="notif-dot"></span>
+        </div>
+
+        <button class="btn-logout" (click)="logout()" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>
