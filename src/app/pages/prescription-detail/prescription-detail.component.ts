@@ -1,7 +1,7 @@
 // src/app/pages/prescription-detail/prescription-detail.component.ts
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, JsonPipe } from '@angular/common';
 import { MedicalPrescription } from '../../interfaces';
 import { PrescriptionService } from '../../services/prescription.service';
 import { catchError, of, switchMap } from 'rxjs';
@@ -14,7 +14,7 @@ const ROUTE_LABELS: Record<string, string> = {
 @Component({
   selector: 'app-prescription-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe],
+  imports: [RouterLink, DatePipe, DecimalPipe, JsonPipe],
   templateUrl: './prescription-detail.component.html',
   styleUrl: './prescription-detail.component.css',
 })
@@ -23,7 +23,9 @@ export class PrescriptionDetailComponent implements OnInit {
   private svc   = inject(PrescriptionService);
 
   rx      = signal<MedicalPrescription | null>(null);
+  rawData = signal<any>(null);
   loading = signal(true);
+  error   = signal<string | null>(null);
 
   routeLabel(r: string): string {
     return ROUTE_LABELS[r] ?? r;
@@ -44,13 +46,18 @@ export class PrescriptionDetailComponent implements OnInit {
       switchMap(params => {
         const id = Number(params.get('id'));
         return this.svc.getById(id).pipe(
-          catchError(() => { this.loading.set(false); return of(null); })
+          catchError((err) => {
+            this.error.set(`Error al cargar la receta: ${err?.status ?? 'Sin conexión'}`);
+            this.loading.set(false);
+            return of(null);
+          })
         );
       })
     ).subscribe(data => {
+      this.loading.set(false);
       if (data) {
-        this.rx.set(data);
-        this.loading.set(false);
+        this.rawData.set(data);
+        this.rx.set(data as MedicalPrescription);
       }
     });
   }

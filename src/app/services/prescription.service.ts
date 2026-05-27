@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { MedicalPrescription, MedicalPrescriptionList, PaginatedResponse } from '../interfaces';
 import { environment } from '../../environments/environment';
 
@@ -17,11 +17,14 @@ export class PrescriptionService {
       p = p.set('patient_sex', params.patient_sex);
     if (params?.ordering)    p = p.set('ordering', params.ordering);
     return this.http.get<PaginatedResponse<MedicalPrescriptionList>>(this.base, { params: p }).pipe(
+      tap(res => console.log('[DEBUG] Prescriptions list raw response:', JSON.stringify(res, null, 2))),
       map(res => res.results)
     );
   }
 
   getById(id: number): Observable<MedicalPrescription> {
-    return this.http.get<MedicalPrescription>(`${this.base}${id}/`);
+    return this.http.get<MedicalPrescription>(`${this.base}${id}/`).pipe(
+      tap(res => console.log('[DEBUG] Prescription detail raw response:', JSON.stringify(res, null, 2)))
+    );
   }
 }
