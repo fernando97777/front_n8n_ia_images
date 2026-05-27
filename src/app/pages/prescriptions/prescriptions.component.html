@@ -51,7 +51,7 @@
           @for (rx of filtered; track rx.id) {
             <tr class="table-row" [routerLink]="['/prescriptions', rx.id]">
               <td><span class="rx-number">{{ rx.prescription_number }}</span></td>
-              <td class="td-date">{{ rx.prescription_date | date:'dd MMM yyyy':'':'es' }}</td>
+              <td class="td-date">{{ rx.prescription_date | date:'dd MMM yyyy' }}</td>
               <td>
                 <div class="td-primary">{{ rx.patient_name }}</div>
                 <div class="td-secondary">{{ rx.patient_age }} años</div>

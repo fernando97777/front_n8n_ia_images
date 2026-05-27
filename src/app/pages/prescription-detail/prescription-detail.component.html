@@ -22,8 +22,8 @@
       </a>
       <div>
         <div class="rx-title-row">
-          <h2 class="rx-number">{{ r.prescription_number }}</h2>
-          <span class="badge badge-success">{{ r.prescription_date | date:'dd MMM yyyy':'':'es' }}</span>
+          <h2 class="rx-number">{{ r.prescription_number || 'Sin N° de receta' }}</h2>
+          <span class="badge badge-success">{{ r.prescription_date | date:'dd MMM yyyy' }}</span>
         </div>
         <p class="rx-meta">
           Procesado con {{ r.claude_model }} · {{ totalTokens | number }} tokens totales
@@ -37,7 +37,7 @@
       <div class="info-card">
         <div class="info-card-header">Paciente</div>
         <div class="info-rows">
-          <div class="info-row"><span class="info-lbl">Nombre</span><span class="info-val">{{ r.patient_name }}</span></div>
+          <div class="info-row"><span class="info-lbl">Nombre</span><span class="info-val">{{ r.patient_name || '—' }}</span></div>
           @if (r.patient_age) {
             <div class="info-row"><span class="info-lbl">Edad</span><span class="info-val">{{ r.patient_age }} años</span></div>
           }
@@ -49,7 +49,7 @@
       <div class="info-card">
         <div class="info-card-header">Médico prescriptor</div>
         <div class="info-rows">
-          <div class="info-row"><span class="info-lbl">Nombre</span><span class="info-val">{{ r.prescriber_name }}</span></div>
+          <div class="info-row"><span class="info-lbl">Nombre</span><span class="info-val">{{ r.prescriber_name || '—' }}</span></div>
           @if (r.prescriber_specialty) {
             <div class="info-row"><span class="info-lbl">Especialidad</span><span class="info-val">{{ r.prescriber_specialty }}</span></div>
           }
@@ -129,15 +129,9 @@
       }
       <div class="meta-item">
         <div class="meta-lbl">Creado</div>
-        <div class="meta-val">{{ r.created_at | date:'dd/MM/yyyy HH:mm':'':'es' }}</div>
+        <div class="meta-val">{{ r.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
       </div>
     </div>
-
-    <!-- ── DEBUG: respuesta cruda del API (eliminar luego) ─── -->
-    <details class="debug-panel">
-      <summary>DEBUG – Respuesta cruda del API</summary>
-      <pre>{{ rawData() | json }}</pre>
-    </details>
   }
 
   @if (!loading() && !rx() && !error()) {
