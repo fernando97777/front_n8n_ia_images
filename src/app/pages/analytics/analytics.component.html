@@ -1,0 +1,242 @@
+<div class="analytics-page">
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Analytics</h1>
+      <p class="page-subtitle">Estadísticas y métricas del sistema</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="downloadPrescriptionsXlsx()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+        </svg>
+        Exportar Recetas (Excel)
+      </button>
+      <button class="btn btn-secondary" (click)="downloadMedicationsXlsx()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+        </svg>
+        Exportar Medicamentos (Excel)
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">Cargando estadísticas...</div>
+  } @else {
+
+    <!-- ── Stats Cards ─────────────────────────────────────── -->
+    @if (stats(); as s) {
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-primary">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h6v6h6v10H6z"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(s.totals.prescriptions) }}</span>
+            <span class="stat-label">Recetas Totales</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-success">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(s.totals.patients) }}</span>
+            <span class="stat-label">Pacientes</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-info">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 16H4V8h16v12z"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(s.totals.doctors) }}</span>
+            <span class="stat-label">Médicos</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-warning">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(s.totals.medications) }}</span>
+            <span class="stat-label">Medicamentos Prescritos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Activity Summary ──────────────────────────────── -->
+      <div class="section-grid">
+        <div class="card">
+          <h3 class="card-title">Actividad Reciente</h3>
+          <div class="activity-stats">
+            <div class="activity-item">
+              <span class="activity-value">{{ s.recent.today }}</span>
+              <span class="activity-label">Hoy</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-value">{{ s.recent.last_7_days }}</span>
+              <span class="activity-label">Últimos 7 días</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-value">{{ s.recent.last_30_days }}</span>
+              <span class="activity-label">Últimos 30 días</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Uso de Tokens (Claude AI)</h3>
+          <div class="token-stats">
+            <div class="token-item">
+              <span class="token-label">Total Input</span>
+              <span class="token-value">{{ formatNumber(s.tokens.total_input) }}</span>
+            </div>
+            <div class="token-item">
+              <span class="token-label">Total Output</span>
+              <span class="token-value">{{ formatNumber(s.tokens.total_output) }}</span>
+            </div>
+            <div class="token-item">
+              <span class="token-label">Promedio Input</span>
+              <span class="token-value">{{ s.tokens.avg_input | number:'1.0-0' }}</span>
+            </div>
+            <div class="token-item">
+              <span class="token-label">Promedio Output</span>
+              <span class="token-value">{{ s.tokens.avg_output | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ── Charts Row ──────────────────────────────────────── -->
+    <div class="section-grid">
+      <!-- Prescriptions by Date -->
+      <div class="card">
+        <h3 class="card-title">Recetas por Día (últimos 30 días)</h3>
+        <div class="mini-chart">
+          @for (point of prescriptionsByDate(); track point.date) {
+            <div class="chart-bar-wrap" [title]="point.date + ': ' + point.count">
+              <div class="chart-bar" [style.height.%]="(point.count / maxDateCount) * 100"></div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Top Medications -->
+      <div class="card">
+        <h3 class="card-title">Medicamentos Más Recetados</h3>
+        <div class="ranking-list">
+          @for (med of topMedications().slice(0, 5); track med.name; let i = $index) {
+            <div class="ranking-item">
+              <span class="ranking-pos">{{ i + 1 }}</span>
+              <div class="ranking-info">
+                <span class="ranking-name">{{ med.name }}</span>
+                <div class="ranking-bar-bg">
+                  <div class="ranking-bar" [style.width.%]="(med.count / maxMedCount) * 100"></div>
+                </div>
+              </div>
+              <span class="ranking-value">{{ med.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── More Stats ──────────────────────────────────────── -->
+    <div class="section-grid section-grid-3">
+      <!-- Top Doctors -->
+      <div class="card">
+        <h3 class="card-title">Top Médicos</h3>
+        <div class="ranking-list">
+          @for (doc of topDoctors(); track doc.id; let i = $index) {
+            <div class="ranking-item">
+              <span class="ranking-pos">{{ i + 1 }}</span>
+              <div class="ranking-info">
+                <span class="ranking-name">{{ doc.name }}</span>
+                <span class="ranking-sub">{{ doc.specialty }}</span>
+              </div>
+              <span class="ranking-value">{{ doc.prescription_count }}</span>
+            </div>
+          }
+          @empty {
+            <div class="empty-mini">Sin datos</div>
+          }
+        </div>
+      </div>
+
+      <!-- Top Clinics -->
+      <div class="card">
+        <h3 class="card-title">Top Clínicas</h3>
+        <div class="ranking-list">
+          @for (clinic of topClinics(); track clinic.id; let i = $index) {
+            <div class="ranking-item">
+              <span class="ranking-pos">{{ i + 1 }}</span>
+              <div class="ranking-info">
+                <span class="ranking-name">{{ clinic.name }}</span>
+                <span class="ranking-sub">{{ clinic.city }}</span>
+              </div>
+              <span class="ranking-value">{{ clinic.prescription_count }}</span>
+            </div>
+          }
+          @empty {
+            <div class="empty-mini">Sin datos</div>
+          }
+        </div>
+      </div>
+
+      <!-- Medication Routes -->
+      <div class="card">
+        <h3 class="card-title">Vías de Administración</h3>
+        <div class="ranking-list">
+          @for (route of medicationRoutes(); track route.route) {
+            <div class="ranking-item">
+              <div class="ranking-info">
+                <span class="ranking-name">{{ routeLabel(route.route) }}</span>
+                <div class="ranking-bar-bg">
+                  <div class="ranking-bar ranking-bar-alt" [style.width.%]="(route.count / maxRouteCount) * 100"></div>
+                </div>
+              </div>
+              <span class="ranking-value">{{ route.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Demographics ────────────────────────────────────── -->
+    @if (demographics(); as demo) {
+      <div class="section-grid">
+        <div class="card">
+          <h3 class="card-title">Distribución por Sexo</h3>
+          <div class="demo-grid">
+            @for (item of demo.by_sex; track item.patient_sex) {
+              <div class="demo-item">
+                <span class="demo-value">{{ item.count }}</span>
+                <span class="demo-label">{{ sexLabel(item.patient_sex) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Distribución por Edad</h3>
+          <div class="demo-grid">
+            @for (entry of demo.by_age_range | keyvalue; track entry.key) {
+              <div class="demo-item">
+                <span class="demo-value">{{ entry.value }}</span>
+                <span class="demo-label">{{ entry.key }} años</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+  }
+</div>

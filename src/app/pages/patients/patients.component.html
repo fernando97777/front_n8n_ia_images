@@ -1,0 +1,67 @@
+<div class="patients-page">
+
+  <!-- ── Toolbar ───────────────────────────────────────────── -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" [(ngModel)]="search" placeholder="Buscar por nombre, teléfono o email..." class="search-input" />
+    </div>
+    <select [(ngModel)]="sexFilter" class="filter-select">
+      <option value="all">Todos los sexos</option>
+      <option value="M">Masculino</option>
+      <option value="F">Femenino</option>
+      <option value="O">Otro</option>
+      <option value="U">No especificado</option>
+    </select>
+    <span class="result-count">{{ filtered.length }} paciente{{ filtered.length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────── -->
+  <div class="card">
+    @if (loading()) {
+      <div class="loading-state">Cargando pacientes...</div>
+    } @else {
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Sexo</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Recetas</th>
+            <th>Registrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filtered; track p.id) {
+            <tr class="table-row">
+              <td>
+                <div class="patient-cell">
+                  <div class="patient-avatar">{{ initials(p.name) }}</div>
+                  <div class="td-primary">{{ p.name }}</div>
+                </div>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="'badge-' + sexVariant(p.sex)">
+                  {{ sexLabel(p.sex) }}
+                </span>
+              </td>
+              <td class="td-mid">{{ p.phone || '—' }}</td>
+              <td class="td-truncate">{{ p.email || '—' }}</td>
+              <td>
+                <span class="rx-count">{{ p.prescription_count }}</span>
+              </td>
+              <td class="td-secondary">{{ p.created_at | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+          @empty {
+            <tr><td colspan="6"><div class="empty-state">No se encontraron pacientes</div></td></tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+
+</div>

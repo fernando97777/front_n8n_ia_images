@@ -49,6 +49,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/doctors/doctors.component').then(m => m.DoctorsComponent),
       },
+      {
+        path: 'patients',
+        loadComponent: () =>
+          import('./pages/patients/patients.component').then(m => m.PatientsComponent),
+      },
+      {
+        path: 'analytics',
+        loadComponent: () =>
+          import('./pages/analytics/analytics.component').then(m => m.AnalyticsComponent),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

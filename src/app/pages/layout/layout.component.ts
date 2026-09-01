@@ -9,6 +9,8 @@ export const NAV_ITEMS = [
   { path: '/prescriptions',label: 'Recetas Médicas', icon: 'prescriptions'},
   { path: '/clinics',      label: 'Clínicas',        icon: 'clinics'      },
   { path: '/doctors',      label: 'Médicos',         icon: 'doctors'      },
+  { path: '/patients',     label: 'Pacientes',       icon: 'patients'     },
+  { path: '/analytics',    label: 'Analytics',       icon: 'analytics'    },
 ];
 
 @Component({
